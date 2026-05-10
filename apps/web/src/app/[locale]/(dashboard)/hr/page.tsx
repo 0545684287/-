@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useRouter, useLocale } from 'next/navigation'
+import { useLocale } from 'next-intl'
 import { hrApi } from '@/lib/api'
 import { UserPlus, Search, Download, Upload, Users, UserCheck, Clock, UserX } from 'lucide-react'
 import { EmployeeTable } from '@/components/hr/EmployeeTable'
