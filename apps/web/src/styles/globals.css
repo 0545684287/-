@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: 37 99 235;
+  --color-secondary: 100 116 139;
+}
+
+[data-theme] {
+  --color-primary: var(--tenant-primary, 37 99 235);
+  --color-secondary: var(--tenant-secondary, 100 116 139);
+}
+
+@layer base {
+  * { @apply border-border; }
+  body { @apply bg-gray-50 text-gray-900; }
+}
+
+/* RTL-aware utilities */
+[dir="rtl"] .sidebar { right: 0; left: auto; }
+[dir="rtl"] .main-content { margin-right: 16rem; margin-left: 0; }
+[dir="ltr"] .main-content { margin-left: 16rem; margin-right: 0; }
