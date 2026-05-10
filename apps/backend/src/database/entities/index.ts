@@ -3,6 +3,8 @@ import { UserEntity } from './user.entity'
 import { AuditLogEntity } from './audit-log.entity'
 import { EmployeeEntity } from './employee.entity'
 import { DepartmentEntity } from './department.entity'
+import { PositionEntity } from './position.entity'
+import { EmployeeHistoryEntity } from './employee-history.entity'
 
 export const entities = [
   TenantEntity,
@@ -10,6 +12,8 @@ export const entities = [
   AuditLogEntity,
   EmployeeEntity,
   DepartmentEntity,
+  PositionEntity,
+  EmployeeHistoryEntity,
 ]
 
 export {
@@ -18,4 +22,6 @@ export {
   AuditLogEntity,
   EmployeeEntity,
   DepartmentEntity,
+  PositionEntity,
+  EmployeeHistoryEntity,
 }
