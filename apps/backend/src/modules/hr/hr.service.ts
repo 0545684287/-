@@ -21,10 +21,15 @@ export class HrService {
   ) {}
 
   async findAllEmployees(tenantId: string, query: EmployeeQueryDto) {
-    const { search, departmentId, status, contractType, page = 1, limit = 20, sortBy = 'createdAt', sortDir = 'DESC' } = query
+    const { search, siteId, departmentId, status, contractType, page = 1, limit = 20, sortBy = 'createdAt', sortDir = 'DESC' } = query
 
     const qb = this.employeeRepo.createQueryBuilder('e')
       .where('e.tenantId = :tenantId', { tenantId })
+
+    if (siteId) {
+      // includes employees with no site (global) OR matching siteId
+      qb.andWhere('(e.siteId = :siteId OR e.siteId IS NULL)', { siteId })
+    }
 
     if (search) {
       qb.andWhere(

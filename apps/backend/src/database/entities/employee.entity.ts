@@ -34,6 +34,11 @@ export class EmployeeEntity {
   @Column({ nullable: true })
   managerId: string
 
+  // null = employee belongs to all sites (global/corporate role)
+  @Column({ nullable: true })
+  @Index()
+  siteId: string
+
   @Column({ type: 'date' })
   startDate: Date
 

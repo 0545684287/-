@@ -21,6 +21,10 @@ export class DepartmentEntity {
   @Column({ nullable: true })
   parentDepartmentId: string
 
+  // null = cross-cutting department (visible across all sites)
+  @Column({ nullable: true })
+  siteId: string
+
   @Column({ default: true })
   isActive: boolean
 

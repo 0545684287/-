@@ -5,12 +5,13 @@ import { useLocale, useTranslations } from 'next-intl'
 import { useAuthStore } from '@/store/auth.store'
 import {
   Users, GraduationCap, Wrench, CheckSquare, UserCheck,
-  FileText, LayoutDashboard, Settings, LogOut, Shield
+  FileText, LayoutDashboard, Settings, LogOut, Shield, MapPin
 } from 'lucide-react'
 import { clsx } from 'clsx'
 
 const modules = [
   { key: 'dashboard', icon: LayoutDashboard, path: 'dashboard' },
+  { key: 'sites', icon: MapPin, path: 'sites', label: 'אתרים' },
   { key: 'hr', icon: Users, path: 'hr' },
   { key: 'training', icon: GraduationCap, path: 'training' },
   { key: 'equipment', icon: Wrench, path: 'equipment' },
@@ -47,9 +48,10 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto p-3 space-y-1">
-        {modules.map(({ key, icon: Icon, path }) => {
+        {modules.map(({ key, icon: Icon, path, label }) => {
           const href = `/${locale}/${path}`
           const isActive = pathname.startsWith(`/${locale}/${path}`)
+          const navLabel = label || (t as any)(key)
           return (
             <Link
               key={key}
@@ -62,7 +64,7 @@ export function Sidebar() {
               )}
             >
               <Icon className="w-4 h-4 flex-shrink-0" />
-              <span>{t(key)}</span>
+              <span>{navLabel}</span>
             </Link>
           )
         })}

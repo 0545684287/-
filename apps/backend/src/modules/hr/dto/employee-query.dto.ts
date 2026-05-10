@@ -3,6 +3,7 @@ import { Type } from 'class-transformer'
 
 export class EmployeeQueryDto {
   @IsOptional() @IsString() search?: string
+  @IsOptional() @IsString() siteId?: string
   @IsOptional() @IsString() departmentId?: string
   @IsOptional() @IsIn(['active', 'inactive', 'on_leave']) status?: string
   @IsOptional() @IsIn(['permanent', 'temporary', 'contractor']) contractType?: string

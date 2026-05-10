@@ -22,6 +22,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { AuditModule } from './modules/audit/audit.module'
 import { StorageModule } from './modules/storage/storage.module'
 import { AiModule } from './modules/ai/ai.module'
+import { SitesModule } from './modules/sites/sites.module'
 import { entities } from './database/entities'
 
 @Module({
@@ -57,6 +58,7 @@ import { entities } from './database/entities'
     AuditModule,
     StorageModule,
     AiModule,
+    SitesModule,
   ],
 })
 export class AppModule {
