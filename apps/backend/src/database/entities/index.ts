@@ -7,6 +7,13 @@ import { PositionEntity } from './position.entity'
 import { EmployeeHistoryEntity } from './employee-history.entity'
 import { SiteEntity } from './site.entity'
 import { UserSiteRoleEntity } from './user-site-role.entity'
+import { TrainingCourseEntity } from './training-course.entity'
+import { TrainingEnrollmentEntity } from './training-enrollment.entity'
+import { EquipmentEntity } from './equipment.entity'
+import { CorrectiveActionEntity } from './corrective-action.entity'
+import { ContractorEntity } from './contractor.entity'
+import { FormTemplateEntity } from './form-template.entity'
+import { FormSubmissionEntity } from './form-submission.entity'
 
 export const entities = [
   TenantEntity,
@@ -18,6 +25,13 @@ export const entities = [
   EmployeeHistoryEntity,
   SiteEntity,
   UserSiteRoleEntity,
+  TrainingCourseEntity,
+  TrainingEnrollmentEntity,
+  EquipmentEntity,
+  CorrectiveActionEntity,
+  ContractorEntity,
+  FormTemplateEntity,
+  FormSubmissionEntity,
 ]
 
 export {
@@ -30,4 +44,11 @@ export {
   EmployeeHistoryEntity,
   SiteEntity,
   UserSiteRoleEntity,
+  TrainingCourseEntity,
+  TrainingEnrollmentEntity,
+  EquipmentEntity,
+  CorrectiveActionEntity,
+  ContractorEntity,
+  FormTemplateEntity,
+  FormSubmissionEntity,
 }

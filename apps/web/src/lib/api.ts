@@ -74,3 +74,47 @@ export const tenantsApi = {
   update: (id: string, data: any) => api.put(`/v1/tenants/${id}`, data),
   toggle: (id: string) => api.patch(`/v1/tenants/${id}/toggle`),
 }
+
+export const trainingApi = {
+  getStats: () => api.get('/v1/training/stats'),
+  getCourses: (params?: any) => api.get('/v1/training/courses', { params }),
+  createCourse: (data: any) => api.post('/v1/training/courses', data),
+  updateCourse: (id: string, data: any) => api.put(`/v1/training/courses/${id}`, data),
+  deleteCourse: (id: string) => api.delete(`/v1/training/courses/${id}`),
+  getEnrollments: (params?: any) => api.get('/v1/training/enrollments', { params }),
+  enroll: (data: any) => api.post('/v1/training/enroll', data),
+  completeEnrollment: (id: string, data: any) => api.post(`/v1/training/enrollments/${id}/complete`, data),
+}
+
+export const equipmentApi = {
+  getStats: () => api.get('/v1/equipment/stats'),
+  getAll: (params?: any) => api.get('/v1/equipment', { params }),
+  create: (data: any) => api.post('/v1/equipment', data),
+  update: (id: string, data: any) => api.put(`/v1/equipment/${id}`, data),
+  remove: (id: string) => api.delete(`/v1/equipment/${id}`),
+}
+
+export const correctiveActionsApi = {
+  getStats: () => api.get('/v1/corrective-actions/stats'),
+  getAll: (params?: any) => api.get('/v1/corrective-actions', { params }),
+  create: (data: any) => api.post('/v1/corrective-actions', data),
+  update: (id: string, data: any) => api.put(`/v1/corrective-actions/${id}`, data),
+  close: (id: string, data: any) => api.post(`/v1/corrective-actions/${id}/close`, data),
+}
+
+export const contractorsApi = {
+  getStats: () => api.get('/v1/contractors/stats'),
+  getAll: (params?: any) => api.get('/v1/contractors', { params }),
+  create: (data: any) => api.post('/v1/contractors', data),
+  update: (id: string, data: any) => api.put(`/v1/contractors/${id}`, data),
+  remove: (id: string) => api.delete(`/v1/contractors/${id}`),
+}
+
+export const formsApi = {
+  getStats: () => api.get('/v1/forms/stats'),
+  getTemplates: (params?: any) => api.get('/v1/forms/templates', { params }),
+  createTemplate: (data: any) => api.post('/v1/forms/templates', data),
+  updateTemplate: (id: string, data: any) => api.put(`/v1/forms/templates/${id}`, data),
+  getSubmissions: (params?: any) => api.get('/v1/forms/submissions', { params }),
+  submit: (templateId: string, data: any) => api.post(`/v1/forms/templates/${templateId}/submit`, data),
+}
