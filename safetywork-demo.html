@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafetyWork — דמו</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: { extend: { colors: { primary: '#2563EB' } } }
+  }
+</script>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #F8FAFC; }
+  .sidebar { width: 220px; min-height: 100vh; background: #0F172A; position: fixed; right: 0; top: 0; z-index: 40; }
+  .main { margin-right: 220px; padding: 24px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: #94A3B8; cursor: pointer; border-radius: 8px; margin: 2px 8px; font-size: 14px; transition: all 0.15s; }
+  .nav-item:hover { background: #1E293B; color: #E2E8F0; }
+  .nav-item.active { background: #2563EB; color: white; }
+  .page { display: none; }
+  .page.active { display: block; }
+  .stat-card { background: white; border-radius: 12px; padding: 20px; border: 1px solid #F1F5F9; display: flex; align-items: center; gap: 16px; }
+  .icon-box { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; display: inline-block; }
+  .table-row { padding: 14px 16px; border-bottom: 1px solid #F1F5F9; display: flex; align-items: center; gap: 12px; }
+  .table-row:hover { background: #F8FAFC; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; flex-shrink: 0; }
+  .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
+  .modal.open { display: flex; }
+  @media (max-width: 768px) {
+    .sidebar { width: 200px; }
+    .main { margin-right: 200px; padding: 16px; }
+  }
+  @media (max-width: 600px) {
+    .sidebar { width: 180px; }
+    .main { margin-right: 180px; padding: 12px; }
+    .stat-card { padding: 12px; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar flex flex-col">
+  <div class="p-4 border-b border-slate-700">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white text-sm font-bold">SW</div>
+      <div>
+        <div class="text-white text-sm font-semibold">SafetyWork</div>
+        <div class="text-slate-400 text-xs">מנהל מערכת</div>
+      </div>
+    </div>
+  </div>
+  <nav class="flex-1 py-3">
+    <div class="nav-item active" onclick="showPage('dashboard')">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/></svg>
+      דשבורד בטיחות
+    </div>
+    <div class="nav-item" onclick="showPage('sites')">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+      אתרים
+    </div>
+    <div class="nav-item" onclick="showPage('hr')">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg>
+      משאבי אנוש
+    </div>
+    <div class="nav-item" onclick="showPage('training')">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838l-2.727 1.17 1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/><path d="M3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0z"/></svg>
+      הדרכות
+    </div>
+    <div class="nav-item" onclick="showPage('equipment')">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+      ניהול ציוד
+    </div>
+    <div class="nav-item" onclick="showPage('corrective')">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+      פעולות מתקנות
+    </div>
+    <div class="nav-item" onclick="showPage('contractors')">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/></svg>
+      קבלנים ואורחים
+    </div>
+    <div class="nav-item" onclick="showPage('forms')">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/></svg>
+      טפסים וביקורות
+    </div>
+    <div class="nav-item" onclick="showPage('settings')">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+      הגדרות מערכת
+    </div>
+  </nav>
+  <div class="p-3 border-t border-slate-700">
+    <div class="nav-item text-red-400" onclick="alert('התנתקת!')">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
+      התנתקות
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="mb-6"><h1 class="text-2xl font-bold text-gray-900">דשבורד בטיחות</h1><p class="text-sm text-gray-500 mt-1">SafetyWork Demo · עודכן היום</p></div>
+  <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+    <div class="stat-card"><div class="icon-box bg-orange-500"><svg width="20" height="20" fill="white" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg></div><div><p class="text-2xl font-bold text-gray-900">14</p><p class="text-sm text-gray-500">ציוד לבדיקה</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-purple-500"><svg width="20" height="20" fill="white" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838l-2.727 1.17 1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/></svg></div><div><p class="text-2xl font-bold text-gray-900">8</p><p class="text-sm text-gray-500">הדרכות השנה</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-blue-500"><svg width="20" height="20" fill="white" viewBox="0 0 20 20"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg></div><div><p class="text-2xl font-bold text-gray-900">127</p><p class="text-sm text-gray-500">עובדים פעילים</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-green-500"><svg width="20" height="20" fill="white" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div><div><p class="text-2xl font-bold text-gray-900">23</p><p class="text-sm text-gray-500">פעולות מתקנות</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-teal-500"><svg width="20" height="20" fill="white" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/></svg></div><div><p class="text-2xl font-bold text-gray-900">47</p><p class="text-sm text-gray-500">טפסים ממתינים</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-red-500"><svg width="20" height="20" fill="white" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg></div><div><p class="text-2xl font-bold text-gray-900">3</p><p class="text-sm text-gray-500">אירועים פתוחים</p></div></div>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-100 p-5">
+    <h2 class="font-semibold text-gray-800 mb-4">פעילות אחרונה</h2>
+    <div class="space-y-3">
+      <div class="flex items-center gap-3 text-sm"><div class="w-2 h-2 rounded-full bg-red-500"></div><span class="text-gray-600 flex-1">דווח על תקלה במלגזה מחסן מרכזי</span><span class="text-gray-400 text-xs">לפני 10 דק׳</span></div>
+      <div class="flex items-center gap-3 text-sm"><div class="w-2 h-2 rounded-full bg-green-500"></div><span class="text-gray-600 flex-1">הושלמה הדרכת בטיחות אש — 12 עובדים</span><span class="text-gray-400 text-xs">לפני שעה</span></div>
+      <div class="flex items-center gap-3 text-sm"><div class="w-2 h-2 rounded-full bg-blue-500"></div><span class="text-gray-600 flex-1">נוסף עובד חדש: דניאל כהן — מחלקת לוגיסטיקה</span><span class="text-gray-400 text-xs">לפני 3 שעות</span></div>
+      <div class="flex items-center gap-3 text-sm"><div class="w-2 h-2 rounded-full bg-yellow-500"></div><span class="text-gray-600 flex-1">קבלן חדש נרשם — חברת שיפוצים כהן ובניו</span><span class="text-gray-400 text-xs">אתמול</span></div>
+      <div class="flex items-center gap-3 text-sm"><div class="w-2 h-2 rounded-full bg-purple-500"></div><span class="text-gray-600 flex-1">הוגש טופס ביקורת בטיחות — אתר צפון</span><span class="text-gray-400 text-xs">אתמול</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- HR -->
+<div id="page-hr" class="page">
+  <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+    <div><h1 class="text-2xl font-bold text-gray-900">משאבי אנוש</h1><p class="text-sm text-gray-500 mt-1">עובדים · 127</p></div>
+    <div class="flex gap-2">
+      <button class="flex items-center gap-2 px-3 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50">⬇ ייצוא</button>
+      <button class="flex items-center gap-2 px-3 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50">⬆ ייבוא Excel</button>
+      <button onclick="alert('פתיחת טופס הוספת עובד')" class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">+ הוסף עובד</button>
+    </div>
+  </div>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="stat-card"><div class="icon-box bg-blue-500"><svg width="20" height="20" fill="white" viewBox="0 0 20 20"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg></div><div><p class="text-2xl font-bold">127</p><p class="text-sm text-gray-500">סה״כ עובדים</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-green-500"><svg width="20" height="20" fill="white" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg></div><div><p class="text-2xl font-bold">119</p><p class="text-sm text-gray-500">פעילים</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-yellow-500"><svg width="20" height="20" fill="white" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg></div><div><p class="text-2xl font-bold">5</p><p class="text-sm text-gray-500">בחופשה</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-gray-400"><svg width="20" height="20" fill="white" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"/></svg></div><div><p class="text-2xl font-bold">3</p><p class="text-sm text-gray-500">לא פעילים</p></div></div>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-100">
+    <div class="p-4 border-b border-gray-100 flex gap-3 flex-wrap">
+      <input placeholder="חיפוש לפי שם, מספר, אימייל..." class="flex-1 min-w-48 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"/>
+      <select class="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white"><option>כל הסטטוסים</option><option>פעיל</option><option>בחופשה</option><option>לא פעיל</option></select>
+    </div>
+    <div>
+      ${[['רונית לוי','EMP-00001','מנהל בטיחות','bg-blue-100 text-blue-700','פעיל','bg-green-100 text-green-700'],
+         ['דניאל כהן','EMP-00002','מהנדס בטיחות','bg-purple-100 text-purple-700','פעיל','bg-green-100 text-green-700'],
+         ['מיכל אברהם','EMP-00003','רכזת הדרכה','bg-orange-100 text-orange-700','בחופשה','bg-yellow-100 text-yellow-700'],
+         ['יוסי מזרחי','EMP-00004','טכנאי ציוד','bg-gray-100 text-gray-600','פעיל','bg-green-100 text-green-700'],
+         ['שרה גולן','EMP-00005','מנהלת HR','bg-pink-100 text-pink-700','פעיל','bg-green-100 text-green-700'],
+         ['אבי שמש','EMP-00006','מנהל לוגיסטיקה','bg-teal-100 text-teal-700','לא פעיל','bg-gray-100 text-gray-500']].map(([name,num,role,roleColor,status,statusColor])=>`
+      <div class="table-row">
+        <div class="avatar bg-blue-100 text-blue-700">${name[0]}</div>
+        <div class="flex-1 min-w-0">
+          <p class="font-medium text-gray-900 text-sm">${name}</p>
+          <p class="text-xs text-gray-400">${num} · ${role}</p>
+        </div>
+        <span class="badge ${statusColor}">${status}</span>
+      </div>`).join('')}
+    </div>
+  </div>
+</div>
+
+<!-- TRAINING -->
+<div id="page-training" class="page">
+  <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+    <div><h1 class="text-2xl font-bold text-gray-900">הדרכות</h1><p class="text-sm text-gray-500 mt-1">קורסים · 8</p></div>
+    <button onclick="alert('פתיחת טופס קורס חדש')" class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">+ קורס חדש</button>
+  </div>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="stat-card"><div class="icon-box bg-blue-500"><svg width="20" height="20" fill="white" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838l-2.727 1.17 1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/><path d="M3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0z"/></svg></div><div><p class="text-2xl font-bold">8</p><p class="text-sm text-gray-500">סה״כ קורסים</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-purple-500"><svg width="20" height="20" fill="white" viewBox="0 0 20 20"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg></div><div><p class="text-2xl font-bold">94</p><p class="text-sm text-gray-500">הרשמות</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-green-500"><svg width="20" height="20" fill="white" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></div><div><p class="text-2xl font-bold">71</p><p class="text-sm text-gray-500">הושלמו</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-red-500"><svg width="20" height="20" fill="white" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg></div><div><p class="text-2xl font-bold">7</p><p class="text-sm text-gray-500">פגי תוקף</p></div></div>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-100 divide-y divide-gray-100">
+    ${[['הדרכת בטיחות אש','בטיחות','חובה','60 דק׳ · תוקף 365 ימים','bg-red-100 text-red-700'],
+       ['עבודה בגובה','בטיחות','חובה','90 דק׳ · תוקף 730 ימים','bg-red-100 text-red-700'],
+       ['נהלי חירום','נהלים','חובה','45 דק׳ · תוקף 365 ימים','bg-blue-100 text-blue-700'],
+       ['הפעלת מלגזה','ציוד','','120 דק׳ · תוקף 365 ימים','bg-purple-100 text-purple-700'],
+       ['עזרה ראשונה','בטיחות','חובה','180 דק׳ · תוקף 730 ימים','bg-red-100 text-red-700'],
+       ['ממשקי רגולציה','רגולציה','','60 דק׳ · תוקף 365 ימים','bg-orange-100 text-orange-700'],
+       ['כיבוי אש','חירום','חובה','90 דק׳ · תוקף 365 ימים','bg-yellow-100 text-yellow-700'],
+       ['נהיגה בטוחה','נהלים','','60 דק׳ · תוקף 365 ימים','bg-blue-100 text-blue-700']].map(([title,type,mandatory,sub,typeColor])=>`
+    <div class="table-row justify-between">
+      <div class="flex items-center gap-3 flex-1 min-w-0">
+        <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 text-lg">🎓</div>
+        <div><p class="font-medium text-gray-900 text-sm">${title}</p><p class="text-xs text-gray-400">${sub}</p></div>
+      </div>
+      <div class="flex gap-2 shrink-0">
+        ${mandatory?'<span class="badge bg-red-100 text-red-700">חובה</span>':''}
+        <span class="badge ${typeColor}">${type}</span>
+      </div>
+    </div>`).join('')}
+  </div>
+</div>
+
+<!-- EQUIPMENT -->
+<div id="page-equipment" class="page">
+  <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+    <div><h1 class="text-2xl font-bold text-gray-900">ניהול ציוד</h1><p class="text-sm text-gray-500 mt-1">פריטים · 42</p></div>
+    <button onclick="alert('הוספת ציוד חדש')" class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">+ הוסף ציוד</button>
+  </div>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="stat-card"><div class="icon-box bg-gray-500">🔧</div><div><p class="text-2xl font-bold">42</p><p class="text-sm text-gray-500">סה״כ פריטים</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-green-500">✓</div><div><p class="text-2xl font-bold">35</p><p class="text-sm text-gray-500">פעיל</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-yellow-500">⏰</div><div><p class="text-2xl font-bold">4</p><p class="text-sm text-gray-500">בתחזוקה</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-red-500">⚠</div><div><p class="text-2xl font-bold">3</p><p class="text-sm text-gray-500">בדיקה באיחור</p></div></div>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+    <div class="p-4 border-b border-gray-100"><input placeholder="חיפוש לפי שם או מספר סידורי..." class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none"/></div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead><tr class="border-b border-gray-100 text-right bg-gray-50"><th class="px-4 py-3 font-medium text-gray-500">שם</th><th class="px-4 py-3 font-medium text-gray-500">קטגוריה</th><th class="px-4 py-3 font-medium text-gray-500">מיקום</th><th class="px-4 py-3 font-medium text-gray-500">בדיקה הבאה</th><th class="px-4 py-3 font-medium text-gray-500">סטטוס</th></tr></thead>
+        <tbody class="divide-y divide-gray-100">
+          ${[['מלגזה חשמלית','מכונות','מחסן מרכזי','15/08/2025','פעיל','bg-green-100 text-green-700'],
+             ['ארגז עזרה ראשונה A','עזרה ראשונה','קומה 1','01/07/2025','פעיל','bg-green-100 text-green-700'],
+             ['מטף כיבוי 6KG','כיבוי אש','כניסה ראשית','20/06/2025','בתחזוקה','bg-yellow-100 text-yellow-700'],
+             ['מדרגות בטיחות','ציוד מגן','מחסן צפון','10/05/2025','בדיקה באיחור','bg-red-100 text-red-700'],
+             ['עגלת הובלה','מכונות','מחסן דרום','30/09/2025','פעיל','bg-green-100 text-green-700'],
+             ['מערכת כריזה','חשמל','כל האתר','15/11/2025','פעיל','bg-green-100 text-green-700']].map(([name,type,loc,date,status,sColor])=>`
+          <tr class="hover:bg-gray-50"><td class="px-4 py-3 font-medium text-gray-900">${name}</td><td class="px-4 py-3 text-gray-600">${type}</td><td class="px-4 py-3 text-gray-600">${loc}</td><td class="px-4 py-3 text-gray-600">${date}</td><td class="px-4 py-3"><span class="badge ${sColor}">${status}</span></td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- CORRECTIVE ACTIONS -->
+<div id="page-corrective" class="page">
+  <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+    <div><h1 class="text-2xl font-bold text-gray-900">פעולות מתקנות</h1><p class="text-sm text-gray-500 mt-1">רשומות · 23</p></div>
+    <button onclick="alert('פתיחת טופס פעולה חדשה')" class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">+ פעולה חדשה</button>
+  </div>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="stat-card"><div class="icon-box bg-red-500">✕</div><div><p class="text-2xl font-bold">8</p><p class="text-sm text-gray-500">פתוחות</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-blue-500">⏳</div><div><p class="text-2xl font-bold">11</p><p class="text-sm text-gray-500">בטיפול</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-orange-500">⚠</div><div><p class="text-2xl font-bold">3</p><p class="text-sm text-gray-500">באיחור</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-green-500">✓</div><div><p class="text-2xl font-bold">12</p><p class="text-sm text-gray-500">סגורות</p></div></div>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-100 divide-y divide-gray-100">
+    ${[['תקלה במערכת ספרינקלרים','מחסן מרכזי — צינור נזיל בקומה 2','critical','קריטי','open','פתוח','01/06/2025'],
+       ['חוסר בשילוט בטיחות','דלת יציאת חירום ללא שילוט','high','גבוה','in_progress','בטיפול','15/06/2025'],
+       ['מגן עיניים פגום','EMP-00045 דיווח על אמצעי מגן לא תקין','medium','בינוני','in_progress','בטיפול','20/06/2025'],
+       ['מדרכה חסומה','נתיב הליכה חסום בחומרי גלם','low','נמוך','open','פתוח','25/06/2025'],
+       ['תקלת מעלית','מעלית מטען לא תקינה — עצרה בין קומות','high','גבוה','open','פתוח','10/06/2025']].map(([title,desc,sev,sevHe,status,statusHe,due])=>{
+      const sevColor = {critical:'bg-red-100 text-red-700',high:'bg-orange-100 text-orange-700',medium:'bg-yellow-100 text-yellow-700',low:'bg-green-100 text-green-700'}[sev];
+      const stColor = {open:'bg-red-100 text-red-700',in_progress:'bg-blue-100 text-blue-700',closed:'bg-green-100 text-green-700'}[status];
+      return `<div class="p-4 hover:bg-gray-50">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex-1 min-w-0"><p class="font-medium text-gray-900 text-sm">${title}</p><p class="text-xs text-gray-500 mt-0.5 line-clamp-1">${desc}</p><p class="text-xs text-gray-400 mt-1">יעד: ${due}</p></div>
+          <div class="flex flex-col items-end gap-1 shrink-0"><span class="badge ${sevColor}">${sevHe}</span><span class="badge ${stColor}">${statusHe}</span></div>
+        </div>
+      </div>`}).join('')}
+  </div>
+</div>
+
+<!-- CONTRACTORS -->
+<div id="page-contractors" class="page">
+  <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+    <div><h1 class="text-2xl font-bold text-gray-900">קבלנים ואורחים</h1><p class="text-sm text-gray-500 mt-1">קבלנים · 18</p></div>
+    <button onclick="alert('הוספת קבלן חדש')" class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">+ הוסף קבלן</button>
+  </div>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="stat-card"><div class="icon-box bg-gray-500">👷</div><div><p class="text-2xl font-bold">18</p><p class="text-sm text-gray-500">סה״כ קבלנים</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-green-500">✓</div><div><p class="text-2xl font-bold">14</p><p class="text-sm text-gray-500">פעילים</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-yellow-500">⏳</div><div><p class="text-2xl font-bold">3</p><p class="text-sm text-gray-500">ממתינים לאישור</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-red-500">⚠</div><div><p class="text-2xl font-bold">2</p><p class="text-sm text-gray-500">רישיון פג בקרוב</p></div></div>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-100 divide-y divide-gray-100">
+    ${[['כהן ובניו שיפוצים','דוד כהן','054-1234567',5,'active','פעיל'],
+       ['חברת חשמל מרכז','יוסי לוי','052-9876543',4,'active','פעיל'],
+       ['שירותי ניקיון מהדרין','רחל אברהם','050-5555555',4,'active','פעיל'],
+       ['תחזוקה ומיזוג בע״מ','אמיר שמש','053-1111111',3,'pending_approval','ממתין לאישור'],
+       ['בניה ופיתוח ישראל','מושה גרין','058-2222222',5,'active','פעיל'],
+       ['הנדסת מים ותשתיות','שלמה בר','054-3333333',2,'active','פעיל']].map(([company,contact,phone,stars,status,statusHe])=>{
+      const sColor = {active:'bg-green-100 text-green-700',pending_approval:'bg-yellow-100 text-yellow-700'}[status];
+      return `<div class="table-row justify-between">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
+          <div class="avatar bg-gray-100 text-gray-600">${company[0]}</div>
+          <div><p class="font-medium text-gray-900 text-sm">${company}</p><p class="text-xs text-gray-400">${contact} · ${phone}</p></div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <div class="flex text-yellow-400 text-xs">${'★'.repeat(stars)}${'☆'.repeat(5-stars)}</div>
+          <span class="badge ${sColor}">${statusHe}</span>
+        </div>
+      </div>`}).join('')}
+  </div>
+</div>
+
+<!-- FORMS -->
+<div id="page-forms" class="page">
+  <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+    <div><h1 class="text-2xl font-bold text-gray-900">טפסים וביקורות</h1><p class="text-sm text-gray-500 mt-1">תבניות · 12</p></div>
+    <button onclick="alert('יצירת טופס חדש')" class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">+ טופס חדש</button>
+  </div>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="stat-card"><div class="icon-box bg-blue-500">📄</div><div><p class="text-2xl font-bold">12</p><p class="text-sm text-gray-500">תבניות פעילות</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-purple-500">📤</div><div><p class="text-2xl font-bold">234</p><p class="text-sm text-gray-500">הגשות סה״כ</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-yellow-500">👁</div><div><p class="text-2xl font-bold">47</p><p class="text-sm text-gray-500">ממתינות לבדיקה</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-green-500">✓</div><div><p class="text-2xl font-bold">187</p><p class="text-sm text-gray-500">אושרו</p></div></div>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    ${[['ביקורת בטיחות שבועית','safety_inspection','ביקורת בטיחות','12 שדות · גרסה 3','bg-blue-100 text-blue-700'],
+       ['דיווח אירוע חריג','incident_report','דיווח אירוע','8 שדות · גרסה 2','bg-red-100 text-red-700'],
+       ['היתר עבודה בגובה','permit_to_work','היתר עבודה','15 שדות · גרסה 1','bg-purple-100 text-purple-700'],
+       ['הערכת סיכונים שנתית','risk_assessment','הערכת סיכונים','20 שדות · גרסה 4','bg-orange-100 text-orange-700'],
+       ['שיחת בטיחות צוות','toolbox_talk','שיחת בטיחות','6 שדות · גרסה 2','bg-green-100 text-green-700'],
+       ['בדיקת ציוד מגן','checklist','רשימת תיוג','10 שדות · גרסה 1','bg-gray-100 text-gray-600']].map(([title,cat,catHe,meta,catColor])=>`
+    <div class="bg-white rounded-xl border border-gray-200 p-4 hover:border-blue-300 hover:shadow-sm cursor-pointer transition" onclick="alert('פתיחת טופס: ${title}')">
+      <div class="flex items-start justify-between gap-2 mb-3">
+        <div class="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center text-lg shrink-0">📋</div>
+        <span class="badge ${catColor}">${catHe}</span>
+      </div>
+      <p class="font-medium text-gray-900 text-sm">${title}</p>
+      <p class="text-xs text-gray-400 mt-1">${meta}</p>
+    </div>`).join('')}
+  </div>
+</div>
+
+<!-- SITES -->
+<div id="page-sites" class="page">
+  <div class="mb-6"><h1 class="text-2xl font-bold text-gray-900">ניהול אתרים</h1><p class="text-sm text-gray-500 mt-1">היררכיית אתרים, בניינים וקומות של הארגון</p></div>
+  <div class="grid grid-cols-3 gap-4 mb-6">
+    <div class="stat-card"><div class="icon-box bg-green-500">👥</div><div><p class="text-2xl font-bold">3</p><p class="text-sm text-gray-500">סה״כ אתרים</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-teal-500">🏢</div><div><p class="text-2xl font-bold">8</p><p class="text-sm text-gray-500">בניינים</p></div></div>
+    <div class="stat-card"><div class="icon-box bg-blue-500">📍</div><div><p class="text-2xl font-bold">3</p><p class="text-sm text-gray-500">אתרים פעילים</p></div></div>
+  </div>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="bg-white rounded-xl border border-gray-100 p-4">
+      <div class="flex items-center justify-between mb-4"><h2 class="font-semibold text-gray-800">היררכיית אתרים</h2><button onclick="alert('הוספת אתר חדש')" class="text-blue-600 text-sm hover:underline">+ אתר חדש</button></div>
+      <div class="space-y-2">
+        <div class="rounded-lg border border-blue-200 bg-blue-50 p-3">
+          <div class="flex items-center gap-2"><span>🏭</span><span class="font-medium text-sm">אתר ראשי — תל אביב</span><span class="badge bg-green-100 text-green-700 mr-auto">פעיל</span></div>
+          <div class="mr-6 mt-2 space-y-1">
+            <div class="flex items-center gap-2 text-sm text-gray-600 py-1"><span>🏢</span> בניין A — מטה</div>
+            <div class="flex items-center gap-2 text-sm text-gray-600 py-1"><span>🏢</span> בניין B — תפעול</div>
+            <div class="flex items-center gap-2 text-sm text-gray-600 py-1"><span>🏭</span> מחסן מרכזי</div>
+          </div>
+        </div>
+        <div class="rounded-lg border border-gray-200 p-3">
+          <div class="flex items-center gap-2"><span>🏭</span><span class="font-medium text-sm">אתר צפון — חיפה</span><span class="badge bg-green-100 text-green-700 mr-auto">פעיל</span></div>
+          <div class="mr-6 mt-2 space-y-1">
+            <div class="flex items-center gap-2 text-sm text-gray-600 py-1"><span>🏢</span> בניין ראשי</div>
+            <div class="flex items-center gap-2 text-sm text-gray-600 py-1"><span>🏭</span> מחסן צפון</div>
+          </div>
+        </div>
+        <div class="rounded-lg border border-gray-200 p-3">
+          <div class="flex items-center gap-2"><span>🏭</span><span class="font-medium text-sm">אתר דרום — באר שבע</span><span class="badge bg-green-100 text-green-700 mr-auto">פעיל</span></div>
+          <div class="mr-6 mt-2"><div class="flex items-center gap-2 text-sm text-gray-600 py-1"><span>🏢</span> בניין יחיד</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-100 p-4">
+      <h2 class="font-semibold text-gray-800 mb-4">פרטי אתר ראשי — תל אביב</h2>
+      <div class="space-y-3 text-sm">
+        <div class="flex justify-between py-2 border-b border-gray-100"><span class="text-gray-500">סוג</span><span class="font-medium">מפעל</span></div>
+        <div class="flex justify-between py-2 border-b border-gray-100"><span class="text-gray-500">עובדים</span><span class="font-medium">89</span></div>
+        <div class="flex justify-between py-2 border-b border-gray-100"><span class="text-gray-500">בניינים</span><span class="font-medium">3</span></div>
+        <div class="flex justify-between py-2 border-b border-gray-100"><span class="text-gray-500">מנהל בטיחות</span><span class="font-medium">רונית לוי</span></div>
+        <div class="flex justify-between py-2"><span class="text-gray-500">כתובת</span><span class="font-medium">רח׳ הברזל 12, תל אביב</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="page-settings" class="page">
+  <div class="mb-6"><h1 class="text-2xl font-bold text-gray-900">הגדרות מערכת</h1></div>
+  <div class="bg-white rounded-xl border border-gray-100">
+    <div class="flex border-b border-gray-100">
+      <button onclick="switchTab(this,'tab-branding')" class="settings-tab active px-5 py-3 text-sm font-medium text-blue-600 border-b-2 border-blue-600">מיתוג</button>
+      <button onclick="switchTab(this,'tab-modules')" class="settings-tab px-5 py-3 text-sm font-medium text-gray-500 border-b-2 border-transparent">מודולים</button>
+      <button onclick="switchTab(this,'tab-notifications')" class="settings-tab px-5 py-3 text-sm font-medium text-gray-500 border-b-2 border-transparent">התראות</button>
+    </div>
+    <div id="tab-branding" class="settings-content p-6 space-y-5">
+      <div><label class="block text-sm font-medium text-gray-700 mb-1">שם החברה</label><input value="SafetyWork Demo" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"/></div>
+      <div><label class="block text-sm font-medium text-gray-700 mb-1">צבע ראשי</label><div class="flex gap-3 items-center"><input type="color" value="#2563EB" class="w-12 h-10 rounded cursor-pointer border border-gray-200"/><span class="text-sm text-gray-500">#2563EB — כחול ראשי</span></div></div>
+      <div><label class="block text-sm font-medium text-gray-700 mb-1">צבע משני</label><div class="flex gap-3 items-center"><input type="color" value="#64748B" class="w-12 h-10 rounded cursor-pointer border border-gray-200"/><span class="text-sm text-gray-500">#64748B — אפור משני</span></div></div>
+      <div><label class="block text-sm font-medium text-gray-700 mb-1">דומיין מותאם</label><input placeholder="safety.mycompany.co.il" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"/></div>
+      <button onclick="alert('השינויים נשמרו!')" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">שמור שינויים</button>
+    </div>
+    <div id="tab-modules" class="settings-content hidden p-6 space-y-3">
+      ${[['משאבי אנוש','ניהול עובדים, היסטוריה, Excel',true],
+         ['הדרכות','קורסים, הרשמות, תעודות',true],
+         ['ניהול ציוד','מלאי, בדיקות, תחזוקה',true],
+         ['פעולות מתקנות','דיווח אירועים, מעקב',true],
+         ['קבלנים','ניהול קבלנים חיצוניים',true],
+         ['טפסים','תבניות וביקורות דיגיטליות',true],
+         ['ניהול אתרים','היררכיית מיקומים',true],
+         ['בינה מלאכותית','הערכות סיכון עם AI',false]].map(([name,desc,enabled])=>`
+      <div class="flex items-center justify-between py-3 border-b border-gray-100">
+        <div><p class="font-medium text-sm text-gray-900">${name}</p><p class="text-xs text-gray-400">${desc}</p></div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" ${enabled?'checked':''} class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+        </label>
+      </div>`).join('')}
+    </div>
+    <div id="tab-notifications" class="settings-content hidden p-6 space-y-4">
+      ${[['📧 אימייל','שלח התראות למייל','true'],
+         ['📱 SMS','הודעות SMS לנייד','true'],
+         ['💬 WhatsApp','הודעות WhatsApp','false'],
+         ['🔔 Push','התראות בדחיפה לאפליקציה','true']].map(([name,desc,enabled])=>`
+      <div class="flex items-center justify-between py-3 border-b border-gray-100">
+        <div><p class="font-medium text-sm text-gray-900">${name}</p><p class="text-xs text-gray-400">${desc}</p></div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" ${enabled==='true'?'checked':''} class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+        </label>
+      </div>`).join('')}
+    </div>
+  </div>
+</div>
+
+</div><!-- end main -->
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo(0,0);
+}
+function switchTab(btn, tabId) {
+  btn.closest('.bg-white').querySelectorAll('.settings-tab').forEach(t => {
+    t.classList.remove('text-blue-600','border-blue-600');
+    t.classList.add('text-gray-500','border-transparent');
+  });
+  btn.classList.remove('text-gray-500','border-transparent');
+  btn.classList.add('text-blue-600','border-blue-600');
+  btn.closest('.bg-white').querySelectorAll('.settings-content').forEach(c => c.classList.add('hidden'));
+  document.getElementById(tabId).classList.remove('hidden');
+}
+</script>
+</body>
+</html>
