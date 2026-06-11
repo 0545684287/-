@@ -14,6 +14,8 @@ import { CorrectiveActionEntity } from './corrective-action.entity'
 import { ContractorEntity } from './contractor.entity'
 import { FormTemplateEntity } from './form-template.entity'
 import { FormSubmissionEntity } from './form-submission.entity'
+import { ReadAndSignDocumentEntity } from './read-and-sign-document.entity'
+import { ReadAndSignSignatureEntity } from './read-and-sign-signature.entity'
 
 export const entities = [
   TenantEntity,
@@ -32,6 +34,8 @@ export const entities = [
   ContractorEntity,
   FormTemplateEntity,
   FormSubmissionEntity,
+  ReadAndSignDocumentEntity,
+  ReadAndSignSignatureEntity,
 ]
 
 export {
@@ -51,4 +55,6 @@ export {
   ContractorEntity,
   FormTemplateEntity,
   FormSubmissionEntity,
+  ReadAndSignDocumentEntity,
+  ReadAndSignSignatureEntity,
 }
